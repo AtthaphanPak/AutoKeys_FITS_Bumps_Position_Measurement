@@ -1,0 +1,2 @@
+cd C:\Projects\AutoKeys_FITS_Bumps_Position_Measurement
+python AutoKeys_FITS_BPM.py
