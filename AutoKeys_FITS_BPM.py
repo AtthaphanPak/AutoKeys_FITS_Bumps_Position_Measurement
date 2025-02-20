@@ -2,6 +2,7 @@ import os
 import glob
 import time
 import FITS_PY
+import logging
 import configparser
 import tkinter as tk
 from datetime import datetime
@@ -21,6 +22,15 @@ def Convert_Data(array_value):
         return pack_value
     
 if __name__ == "__main__":
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes("-topmost", True)
+    logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    
     # Read parameters from config files
     config = configparser.ConfigParser()
     try:
@@ -30,7 +40,8 @@ if __name__ == "__main__":
         operation = config["DEFAULT"]["operation"]
         fileExtensions = config["DEFAULT"]["extensions"]
     except Exception as e:
-        print(f"{e}\nPlease check config.ini")
+        logging.critical(e)
+        messagebox.showerror("MAIN MESSAGE", f"QUIT PROGRAM\n{e}")
         quit()
         
     Arhfile = os.path.join(path, "Arh")
@@ -40,9 +51,6 @@ if __name__ == "__main__":
     os.makedirs(logfailfile, exist_ok=True)
     os.makedirs(handfailfile, exist_ok=True)
     
-    root = tk.Tk()
-    root.withdraw()
-    root.attributes("-topmost", True)
     en = askAccount()
     while True:
         allfiles = glob.glob(os.path.join(path, fileExtensions))
@@ -55,10 +63,7 @@ if __name__ == "__main__":
             FITSHandcheck = FITS_PY.Handshake(model, operation, serial)
             if FITSHandcheck != True:
                 messagebox.showerror("FITS MESSAGE", f"Serial: {serial} Please Check Operation in FITS")
-                print(f"--- FITS HANDCHECK ERROR ---")
-                print(f"Path: {f}")
-                print(FITSHandcheck)
-                print(f"----------------------------")
+                logging.error(FITSHandcheck)
                 os.rename(f, os.path.join(handfailfile, newname))
                 continue
             
@@ -75,15 +80,12 @@ if __name__ == "__main__":
             FITSLog = FITS_PY.Log(model, operation, parameters, values)
             if FITSLog == True:
                 os.rename(f, os.path.join(Arhfile, newname))
-                print(f"Serial: {serial} Push to FITs Successfully")
+                logging.info(f"Serial: {serial} Push to FITs Successfully")
             else:
                 messagebox.showerror("FITS MESSAGE", f"Serial: {serial} Please Check Log File")
-                print(f"--- FITS LOG ERROR ---")
-                print(f"Path: {f}")
-                print(FITSLog)
-                print(f"----------------------")
+                logging.error(FITSLog)
                 os.rename(f, os.path.join(logfailfile, newname))
                 
-        print("Wait to Process...")        
-        time.sleep(30)
+        logging.info("Wait to Process")        
+        time.sleep(10)
         
