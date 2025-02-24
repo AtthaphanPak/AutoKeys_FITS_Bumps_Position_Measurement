@@ -68,9 +68,9 @@ if __name__ == "__main__":
                 continue
             
             listparameters = {
-                "EN" : en,
-                "SN RCVR" : serial,
-                "Test Report" : f,
+                "EN" : str(en),
+                "SN RCVR" : str(serial),
+                "Test Report" : str(f),
                 "File Name" : str(f),
                 "Result" : "PASS"
             }
