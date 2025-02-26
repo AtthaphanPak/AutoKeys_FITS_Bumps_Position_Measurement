@@ -63,7 +63,7 @@ if __name__ == "__main__":
             FITSHandcheck = FITS_PY.Handshake(model, operation, serial)
             if FITSHandcheck != True:
                 messagebox.showerror("FITS MESSAGE", f"Serial: {serial} Please Check Operation in FITS")
-                logging.error(FITSHandcheck)
+                logging.error(f"Serial: {serial} {FITSHandcheck}")
                 os.rename(f, os.path.join(handfailfile, newname))
                 continue
             
@@ -74,9 +74,8 @@ if __name__ == "__main__":
                 "File Name" : str(f),
                 "Result" : "PASS"
             }
-
             parameters = Convert_Data(listparameters.keys())
-            values = Convert_Data(listparameters.items())
+            values = Convert_Data(listparameters.values())
             FITSLog = FITS_PY.Log(model, operation, parameters, values)
             if FITSLog == True:
                 os.rename(f, os.path.join(Arhfile, newname))
