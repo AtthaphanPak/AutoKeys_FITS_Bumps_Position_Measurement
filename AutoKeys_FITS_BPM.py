@@ -61,10 +61,16 @@ if __name__ == "__main__":
             serial = base_name[:22]
             newname = f"{serial}_{datenow}{extension}"
             FITSHandcheck = FITS_PY.Handshake(model, operation, serial)
+            fullpath = os.path.join(handfailfile, newname)
+            count = 1
             if FITSHandcheck != True:
                 messagebox.showerror("FITS MESSAGE", f"Serial: {serial} Please Check Operation in FITS")
                 logging.error(f"Serial: {serial} {FITSHandcheck}")
-                os.rename(f, os.path.join(handfailfile, newname))
+                while os.path.exists(fullpath):
+                    fullpath = os.path.join(handfailfile, f"{serial}_{datenow}_({count}){extension}")
+                    count +=1
+
+                os.rename(f, fullpath)
                 continue
             
             listparameters = {
@@ -78,13 +84,19 @@ if __name__ == "__main__":
             values = Convert_Data(listparameters.values())
             FITSLog = FITS_PY.Log(model, operation, parameters, values)
             if FITSLog == True:
-                os.rename(f, os.path.join(Arhfile, newname))
+                while os.path.exists(fullpath):
+                    fullpath = os.path.join(Arhfile, f"{serial}_{datenow}_({count}){extension}")
+                    count +=1
+                os.rename(f, fullpath)
                 logging.info(f"Serial: {serial} Push to FITs Successfully")
             else:
                 messagebox.showerror("FITS MESSAGE", f"Serial: {serial} Please Check Log File")
                 logging.error(FITSLog)
-                os.rename(f, os.path.join(logfailfile, newname))
+                while os.path.exists(fullpath):
+                    fullpath = os.path.join(logfailfile, f"{serial}_{datenow}_({count}){extension}")
+                    count +=1
+                os.rename(f, fullpath)
                 
         logging.info("Wait to Process")        
-        time.sleep(10)
+        time.sleep(30)
         
